@@ -9,3 +9,6 @@ run:
 
 build-api:
 	go build -gcflags='-e' -o bin/api cmd/api/main.go
+
+vendor:
+	go mod vendor && go mod tidy

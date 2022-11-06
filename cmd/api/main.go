@@ -3,22 +3,15 @@ package main
 import (
 	"net/http"
 	"log"
+	"github.com/LukasJenicek/jsi-krek/services/api"
 )
 
-type Server struct{}
-
-func (*Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(200)
-	w.Write([]byte{})
-}
-
 func main() {
-	handler := Server{}
 	addr := ":9099"
 
 	server := http.Server{
 		Addr:    addr,
-		Handler: &handler,
+		Handler: api.Router(),
 	}
 
 	log.Printf("serving on port %s", addr)
