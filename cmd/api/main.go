@@ -1,14 +1,17 @@
 package main
 
 import (
-	stdlog "log"
+	"log"
 	"net/http"
 	"os"
 	"time"
 
+	"github.com/LukasJenicek/jsi-krek/data"
 	"github.com/LukasJenicek/jsi-krek/services/api"
 	"github.com/rs/zerolog"
 	zlog "github.com/rs/zerolog/log"
+	"github.com/upper/db/v4"
+	"github.com/upper/db/v4/adapter/sqlite"
 )
 
 func main() {
@@ -23,7 +26,31 @@ func main() {
 
 	zlog.Info().Msgf("serving on port %s", addr)
 
-	err := server.ListenAndServe()
+	settings := sqlite.ConnectionURL{
+		Database: "krek.db",
+	}
+
+	// Attempt to open the 'example.db' database file
+	sess, err := sqlite.Open(settings)
+	if err != nil {
+		log.Fatalf("db.Open(): %q\n", err)
+	}
+	defer sess.Close() // Closing the session is a good practice.
+
+	surveyQuestions := sess.Collection("survey_questions")
+
+	var questions []*data.SurveyQuestion
+
+	err = surveyQuestions.Find(db.Cond{"survey_id": 1}).All(&questions)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, question := range questions {
+		zlog.Info().Msgf("%d: %s", question.Id, question.Question)
+	}
+
+	err = server.ListenAndServe()
 	if err != nil {
 		panic(err)
 	}
@@ -45,9 +72,9 @@ func configureLogger() {
 	zerolog.SetGlobalLevel(zerolog.DebugLevel)
 
 	// Redirect stdlib's log output to zerolog.
-	stdlog.SetFlags(0)
-	stdlog.SetOutput(logger)
-	stdlog.SetPrefix("")
+	log.SetFlags(0)
+	log.SetOutput(logger)
+	log.SetPrefix("")
 
 	zlog.Logger = logger
 }
