@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS "surveys";
 DROP TABLE IF EXISTS "survey_questions";
 DROP TABLE IF EXISTS "survey_answers";
-DROP TABLE IF EXISTS "surveys";
+DROP TABLE IF EXISTS "distributed_surveys";
 DROP TABLE IF EXISTS "responds";
 
 CREATE TABLE "surveys"

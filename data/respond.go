@@ -3,7 +3,7 @@ package data
 import "time"
 
 type Respond struct {
-	Id        int64      `db:"id" json:"id,string"`
+	Id        int64      `db:"id,omitempty,pk" json:"id,string"`
 	SurveyId  int64      `db:"survey_id" json:"survey_id"`
 	CreatedAt *time.Time `db:"created_at" json:"created_at"`
 	Who       string     `db:"who" json:"who"` // TODO: Probably ip address ?

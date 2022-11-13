@@ -11,7 +11,6 @@ import (
 	"github.com/rs/zerolog"
 	zlog "github.com/rs/zerolog/log"
 	"github.com/upper/db/v4"
-	"github.com/upper/db/v4/adapter/sqlite"
 )
 
 func main() {
@@ -26,22 +25,15 @@ func main() {
 
 	zlog.Info().Msgf("serving on port %s", addr)
 
-	settings := sqlite.ConnectionURL{
-		Database: "krek.db",
-	}
-
-	// Attempt to open the 'example.db' database file
-	sess, err := sqlite.Open(settings)
+	sess, err := data.NewDBSession()
 	if err != nil {
-		log.Fatalf("db.Open(): %q\n", err)
+		log.Fatal(err)
 	}
-	defer sess.Close() // Closing the session is a good practice.
 
-	surveyQuestions := sess.Collection("survey_questions")
+	defer sess.Close()
 
 	var questions []*data.SurveyQuestion
-
-	err = surveyQuestions.Find(db.Cond{"survey_id": 1}).All(&questions)
+	err = data.GetSurveyQuestionStore(sess).Find(db.Cond{"survey_id": 1}).All(&questions)
 	if err != nil {
 		log.Fatal(err)
 	}
